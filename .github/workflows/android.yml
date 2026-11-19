@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0" "cmdline-tools;latest" "ndk;23.2.8568313" "cmake;3.10.2.4988404"
 
       - name: Install Godot 4.4.1 and Android export templates
         run: |
@@ -60,9 +60,13 @@ jobs:
         run: godot --headless --editor --path . --quit
 
       - name: Export APK
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /home/runner/.android/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
           mkdir -p build
-          godot --headless --path . --export-debug "Android" build/RoyalArena.apk
+          godot --headless --verbose --path . --export-debug "Android" build/RoyalArena.apk
           test -s build/RoyalArena.apk
 
       - name: Upload APK
