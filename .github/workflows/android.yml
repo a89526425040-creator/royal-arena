@@ -1,0 +1,35 @@
+name: Build Royal Arena Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Export Android APK
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Android export templates
+        run: |
+          mkdir -p ~/.config/godot
+          godot --version
+          mkdir -p build
+
+      - name: Import project
+        run: godot --headless --editor --path . --quit
+
+      - name: Export APK
+        run: godot --headless --path . --export-debug "Android" build/RoyalArena.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalArena-Android-APK
+          path: build/RoyalArena.apk
+          if-no-files-found: error
